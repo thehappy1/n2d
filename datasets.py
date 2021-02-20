@@ -4,6 +4,15 @@ import numpy as np
 import pandas as pd
 from keras.datasets import fashion_mnist
 from keras.datasets import mnist
+from fpidataset import Fpidataset
+
+def load_fpidataset():
+    (x_train, y_train), (x_test, y_test) = Fpidataset.load_data()
+    x = np.concatenate((x_train, x_test))
+    y = np.concatenate((y_train, y_test))
+    x = x.reshape((x.shape[0], -1))
+    x = np.divide(x, 255.)
+    return x
 
 
 def load_mnist():

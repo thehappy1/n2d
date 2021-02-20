@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from PIL import Image
 import numpy as np
+import cv2
 
 class Fpidataset():
     # Constructor
@@ -31,10 +32,8 @@ class Fpidataset():
 
     def load_data(self):
 
-        self.x_train = self.get_i_items(self.df, 800, train=True)
-        self.x_test = self.get_i_items(self.df, 800, train=False)
-        self.y_train = self.get_i_labels(self.df, 800)
-        self.y_test = self.get_i_labels(self.df, 800)
+        self.x_train, self.y_train = self.get_i_items(self.df, 800, train=True)
+        self.x_test, self.y_test = self.get_i_items(self.df, 200, train=False)
 
         return self.x_train, self.x_test, self.y_train, self.y_test
 
@@ -45,35 +44,39 @@ class Fpidataset():
         temp = df.targets.value_counts().sort_values(ascending=False)[:10].index.tolist()
         df_temp = df[df["targets"].isin(temp)]
 
-        # generate new empty dataframe with the columns of the original
-        dataframe = df[:0]
-
-        # for each targetclass in temp insert i items in dataframe
-        list = []
+        x_data = []
+        y_data = []
 
         if train==True:
-            for element in temp:
-                # print("Füge Items mit target", element, "ein.")
-                dataframe = dataframe.append(df_temp[df_temp.targets == element][:i])
-                for x in range(i):
-                    img = Image.open(dataframe.image_path[i-1])
-                    list.append(img)
-                list = np.array(list)
-                print("Anzahl x_train itemsbei ", element, " :", len(dataframe))
+            for label in temp:
+
+                temp_labels = df_temp[df_temp.targets == label]
+                train_temp = temp_labels[:i]
+
+                y_data.append(train_temp["targets"].to_list())
+
+                for element in train_temp.image_path:
+                    img = cv2.imread(element)
+                    x_data.append(img)
+
+                #image normalization fehlt
+                print("Anzahl x_train items bei ", label, " :", len(x_data))
+                print(" ")
         else:
-            for element in temp:
-                dataframe = dataframe.append(df_temp[df_temp.targets == element][i:i + 200])
-                print("Anzahl x_test items bei ", element, " :", len(dataframe))
+            for label in temp:
 
-        return dataframe
+                test_temp = df_temp[df_temp.targets == label]
+                test_temp = test_temp[800:1000]
 
-    def get_i_labels(self, df, i):
-        y_train = df.targets[0:i]
-        y_test = df.targets[i - 1:i + 200]
+                y_data.append(test_temp["targets"].to_list())
 
-        #print("y_train Ausgabe: ", y_train)
-        #print("y_test Ausgabe: ", y_test)
+                for element in test_temp.image_path:
+                    img = cv2.imread(element)
+                    x_data.append(img)
 
-        return y_train, y_test
+                print("Anzahl x_test items bei ", label, " :", len(x_data))
+                print(" ")
 
+        print("y_data: ",y_data)
+        return x_data, y_data
 
