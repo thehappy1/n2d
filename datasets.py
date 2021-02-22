@@ -12,7 +12,7 @@ def load_fpidataset():
     y = np.concatenate((y_train, y_test))
     x = x.reshape((x.shape[0], -1))
     x = np.divide(x, 255.)
-    return x
+    return x, y
 
 
 def load_mnist():
