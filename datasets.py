@@ -4,15 +4,16 @@ import numpy as np
 import pandas as pd
 from keras.datasets import fashion_mnist
 from keras.datasets import mnist
-from fpidataset import Fpidataset
 
 def load_fpidataset():
-    (x_train, y_train), (x_test, y_test) = Fpidataset.load_data()
+    from fpidataset import Fpidataset
+    dataset = Fpidataset()
+    (x_train, y_train), (x_test, y_test) = dataset.load_data()
     x = np.concatenate((x_train, x_test))
     y = np.concatenate((y_train, y_test))
-    x = x.reshape((x.shape[0], -1))
-    x = np.divide(x, 255.)
-    return x, y
+    x = x.reshape([-1, 80, 60, 3]) / 255.0
+    print("Fashion Product Images (Small) samples", x.shape)
+    return x.reshape([x.shape[0], -1]), y
 
 
 def load_mnist():
@@ -42,7 +43,6 @@ def load_fashion():
     y_names = {0: "T-shirt", 1: "Trouser", 2: "Pullover", 3: "Dress", 4: "Coat",
                5: "Sandal", 6: "Shirt", 7: "Sneaker", 8: "Bag", 9: "Ankle Boot"}
     return x, y, y_names
-
 
 def load_har():
     x_train = pd.read_csv(

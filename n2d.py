@@ -334,7 +334,7 @@ if __name__ == "__main__":
     print(args)
 
     optimizer = 'adam'
-    from datasets import load_mnist, load_mnist_test, load_usps, load_pendigits, load_fashion, load_har
+    from datasets import load_mnist, load_mnist_test, load_usps, load_pendigits, load_fashion, load_har, load_fpidataset
 
     label_names = None
     if args.dataset == 'mnist':
@@ -349,6 +349,8 @@ if __name__ == "__main__":
         x, y, label_names = load_fashion()
     elif args.dataset == 'har':
         x, y, label_names = load_har()
+    elif args.dataset == 'fpi':
+        x, y, label_names = load_fpidataset()
 
     shape = [x.shape[-1], 500, 500, 2000, args.n_clusters]
     autoencoder = autoencoder(shape)

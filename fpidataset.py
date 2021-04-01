@@ -2,43 +2,23 @@ import os
 import pandas as pd
 import numpy as np
 import cv2
-import glob
+
 
 class Fpidataset():
     # Constructor
     def __init__(self):
 
-        #self.df = self.df[self.df['fold'] == fold]
+        self.df = pd.read_csv('styles.csv', error_bad_lines=False)
+        self.df['image_path'] = self.df.apply(lambda x: os.path.join("images", str(x.id) + ".jpg"), axis=1)
 
-        #if transform is not None:
-            #transform = torchvision.transforms.Compose([
-                #torchvision.transforms.Resize((224, 224)),
-                #torchvision.transforms.ToTensor()
-            #])
-        #self.transform = transform
+        # drop rows where id.jpg cannot be found in the images directory
+        self.df = self.df.drop([32309, 40000, 36381, 16194, 6695])
 
-        self.df = pd.read_csv('data/styles.csv', error_bad_lines=False)
-        self.df['image_path'] = self.df.apply(lambda x: os.path.join("data\images", str(x.id) + ".jpg"), axis=1)
-
-        #drop rows where id.jpg cannot be found in the images directory
-        avl = []
-
-        globbed_files = glob.glob('data/images/*.jpg')
-        for jpg in globbed_files:
-            filename = os.path.basename(jpg)
-            temp = os.path.splitext(filename)[0]
-            avl.append(temp)
-        self.df["image_avl"] = self.df.id.isin(avl)
-        self.df = self.df[self.df.image_avl]
-
-        #map articleType as number
+        # map articleType as number
         mapper = {}
         for i, cat in enumerate(list(self.df.articleType.unique())):
             mapper[cat] = i
-        print(mapper)
         self.df['targets'] = self.df.articleType.map(mapper)
-
-
 
     # Get the length
     def __len__(self):
@@ -61,7 +41,7 @@ class Fpidataset():
         x_data = []
         y_data = []
 
-        if train==True:
+        if train == True:
             for label in temp:
 
                 train_temp = df_temp[df_temp.targets == label]
@@ -75,8 +55,8 @@ class Fpidataset():
                     img = np.array(img).astype('float32')
                     x_data.append(img)
 
-                print("Anzahl x_train items bei ", label, " :", len(x_data))
-                print(" ")
+                # print("Anzahl x_train items bei ", label, " :", len(x_data))
+                # print(" ")
         else:
             for label in temp:
 
@@ -91,10 +71,10 @@ class Fpidataset():
                     img = np.array(img).astype('float32')
                     x_data.append(img)
 
-                print("Anzahl x_test items bei ", label, " :", len(x_data))
-                print(" ")
+                # print("Anzahl x_test items bei ", label, " :", len(x_data))
+                # print(" ")
 
         x_data = np.array(x_data)
-        print("input data shape: ",x_data.shape)
+        # print("input data shape: ",x_data.shape)
         return x_data, y_data
 
