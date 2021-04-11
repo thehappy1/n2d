@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import sys
 import tensorflow as tf
-import umap
+import umap.umap_ as umap
 from keras import backend as K
 from keras.layers import Dense, Input
 from keras.models import Model
