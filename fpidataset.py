@@ -28,7 +28,7 @@ class Fpidataset():
 
         self.x_train, self.y_train = self.get_i_items(self.df, 800, train=True)
         self.x_test, self.y_test = self.get_i_items(self.df, 200, train=False)
-
+        print("Dataset loaded!!!!!!!!!!!!!!!")
         return (self.x_train, self.y_train), (self.x_test, self.y_test)
 
     def get_i_items(self, df, number_of_items, train):
